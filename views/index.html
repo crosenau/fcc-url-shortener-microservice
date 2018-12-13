@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>URL Shortener Microservice</title>
+    <meta name="description" content="A cool thing made with Glitch">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/style.css">
+    <!--<script src="/client.js" defer></script> -->
+  </head>
+  
+  <body>
+    <header>
+      <h1>URL Shortener Microservice</h1>
+    </header>
+    <main>
+      <form action="/api/shorturl/new" method="post">
+        <label for="url-input">URL to be shortened</label>
+        <input id="url-input" name="url" type="text" maxlength="100" placeholder="https://www.freecodecamp.com">
+        <button type="submit" id="submit-url">Submit URL</button>
+      </form>
+    </main>
+  </body>
+  
+</html>
