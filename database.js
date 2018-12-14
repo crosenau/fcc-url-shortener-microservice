@@ -3,36 +3,114 @@
 const mongodb = require('mongodb');
 const mongoose = require('mongoose');
 
-mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true } );
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true } );
 
 const Schema = mongoose.Schema;
-const urlSchema = new Schema ({
+const urlMapSchema = new Schema ({
   original_url: String,
   short_url: Number
 });
 
-function testMongo() {
-  const Schema = mongoose.Schema;
-  const personSchema = new Schema ({
-    name: {
-      type: String,
-      required: true    
-    },
-    age: Number,
-    favoriteFoods: [String]
-  });
+const UrlMap = mongoose.model('url', urlMapSchema);
 
-  const Person = mongoose.model('Person', personSchema);
+async function getShortUrl(url) {
+  try {
+    const queryResult = await searchByUrl(url);
+    
+    console.log(`queryResult: ${queryResult}`);
+    if (queryResult) return queryResult;
+    
+    const newShortUrl = await getNextShortUrl();
+    console.log(`newShortUrl: ${newShortUrl}`);
+    
+    const newUrlMapObj = {
+      original_url: url,
+      short_url: newShortUrl
+    };
+    
+    const newUrlMap = await saveUrlMap(newUrlMapObj);
+    return newUrlMap;
+    
+  } catch(err) {
+    console.error(err);
+  }  
+}
+
+async function getOriginalUrl(shortUrl) {
+  try {
+    const queryResult = await searchByShortUrl(shortUrl);
+    return queryResult.original_url;
+  } catch(err) {
+    console.error(err);
+  }
+}
+
+function searchByUrl(normalUrl) {
+  return new Promise((resolve, reject) => {
+    UrlMap.findOne({ original_url: normalUrl })
+      .select('original_url short_url -_id')    
+      .exec(function(err, result) {
+        if (err) reject(err);
+        resolve(result);
+      });
+  });
+}
+
+function searchByShortUrl(shortUrl) {
+  return new Promise((resolve, reject) => {
+    UrlMap.findOne({ short_url: shortUrl })
+      .select('original_url -_id')
+      .exec(function(err, result) {
+        if(err) reject(err);
+        resolve(result);
+    });
+  });
+}
+
+function getNextShortUrl() {
+  // Find maximum short url value and return that + 1
   
-  Person.find({ name: /\w/ }, function(err, data) {
+  return new Promise((resolve, reject) => {
+    UrlMap.findOne({ original_url: /\w/ })
+      .sort({ short_url: -1 })
+      .select('short_url -_id')
+      .exec(function(err, shortUrl) {
+        if (err) {
+          reject(err);
+        } else if (shortUrl) {
+          resolve(shortUrl.short_url + 1);
+        } else {
+          resolve(0);
+        }
+    });
+  });
+}
+
+function saveUrlMap(urlMapObj) {
+  return new Promise((resolve, reject) => {
+    const newUrlMap = new UrlMap(urlMapObj);    
+    
+    newUrlMap.save(function(err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(urlMapObj);
+      }
+    });
+  });
+}
+
+function deleteAllUrlMaps() {
+  UrlMap.deleteMany({ original_url: /\w/}, function(err, data) {
     if (err) {
       console.error(err);
     } else {
+      console.log('Deleting all UrlMaps');
       console.log(data);
-    }
-  });
-
+    }   
+  
+  })
 }
 
-
-exports.testMongo = testMongo;
+exports.getShortUrl = getShortUrl;
+exports.getOriginalUrl = getOriginalUrl;
