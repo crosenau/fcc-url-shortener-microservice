@@ -21,7 +21,8 @@ app.post('/api/shorturl/new', (req, res) => {
   const url = req.body.url
     .replace(/https:\/\//, '')
     .replace(/http:\/\//, '')
-    .replace(/^www\./, '');
+    .replace(/^www\./, '')
+    .replace(/\/$/, '');
   
   if (!url.match(/\D/)) return res.json(errorResponse);
 
