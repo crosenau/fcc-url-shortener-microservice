@@ -17,20 +17,11 @@ async function getShortUrl(url) {
   try {
     const queryResult = await searchByUrl(url);
     
-    console.log(`queryResult: ${queryResult}`);
     if (queryResult) return queryResult;
     
     const newShortUrl = await getNextShortUrl();
-    console.log(`newShortUrl: ${newShortUrl}`);
-    
-    const newUrlMapObj = {
-      original_url: url,
-      short_url: newShortUrl
-    };
-    
-    const newUrlMap = await saveUrlMap(newUrlMapObj);
+    const newUrlMap = await saveUrlMap(url, newShortUrl);
     return newUrlMap;
-    
   } catch(err) {
     console.error(err);
   }  
@@ -86,8 +77,12 @@ function getNextShortUrl() {
   });
 }
 
-function saveUrlMap(urlMapObj) {
+function saveUrlMap(originalUrl, shortUrl) {
   return new Promise((resolve, reject) => {
+    const urlMapObj = {
+      original_url: originalUrl,
+      short_url: shortUrl
+    };
     const newUrlMap = new UrlMap(urlMapObj);    
     
     newUrlMap.save(function(err, data) {

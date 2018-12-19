@@ -7,19 +7,24 @@ const bodyParser = require('body-parser');
 const dns = require('dns');
 const database = require('./database.js');
 
+app.use(cors({ optionSuccessStatus: 200 }));
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.get('/', function(req, res) {
   res.sendFile(`${__dirname}/views/index.html`);
 });
 
 app.post('/api/shorturl/new', (req, res) => {
+  console.log(req.body);
   const errorResponse = { error: "invalid URL" };
-  let url = req.body.url;
+  const url = req.body.url
+    .replace(/https:\/\//, '')
+    .replace(/http:\/\//, '')
+    .replace(/^www\./, '');
   
   if (!url.match(/\D/)) return res.json(errorResponse);
-  if (!url.match(/^www\./)) url = `www.${url}`;
-  
+
   // Validate url
   dns.lookup(url, (err, address, family) => {
     if (err) {
@@ -36,7 +41,6 @@ app.post('/api/shorturl/new', (req, res) => {
 app.get('/api/shorturl/:shortUrl', (req, res) => {
   database.getOriginalUrl(req.params.shortUrl)
     .then(result => {
-      console.log(result === undefined);
       if (result === undefined) {
         res.json({ error: `No URL found for shortUrl ${req.params.shortUrl}`});
       } else {
