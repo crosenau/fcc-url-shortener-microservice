@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/style.css">
-    <!--<script src="/client.js" defer></script> -->
+    <script src="/client.js" defer></script>
   </head>
   
   <body>
@@ -15,10 +15,19 @@
       <h1>URL Shortener Microservice</h1>
     </header>
     <main>
-      <form action="/api/shorturl/new" method="post">
+      <div class="input-section">
         <label for="url-input">URL to be shortened</label>
-        <input id="url-input" name="url" type="text" maxlength="100" placeholder="www.freecodecamp.com">
-        <button type="submit" id="submit-url">Submit URL</button>
+        <input id="url-input" name="url" type="text" placeholder="example.com">
+        <button type="button" id="submit-url" onclick="displayShortUrl()">Post URL</button>
+      </div>
+      <div id="api-results">
+        <p id="message"></p>
+        <pre id="json"></pre>
+      </div>
+      <form id="short-url-form" class="input-section" action="#" onsubmit="openShortUrl()">
+        <label for="short-url-input">Enter Short URL</label>
+        <input id="short-url-input" name="short-url" type="text" value="/api/shorturl/">
+        <button type="submit" id="submit-short-url">Submit URL</button>
       </form>
     </main>
   </body>
