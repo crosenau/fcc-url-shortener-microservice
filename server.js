@@ -25,6 +25,7 @@ app.post('/api/shorturl/new', (req, res) => {
     .replace(/\/$/, '');
   
   if (!url.match(/\D/)) return res.json(errorResponse);
+  console.log('FormattedURL: ', url);
 
   // Validate url
   dns.lookup(url, (err, address, family) => {

@@ -11,7 +11,7 @@ const urlMapSchema = new Schema ({
   short_url: Number
 });
 
-const UrlMap = mongoose.model('url', urlMapSchema);
+const UrlMap = mongoose.model('urlMap', urlMapSchema);
 
 async function getShortUrl(url) {
   try {

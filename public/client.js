@@ -18,9 +18,7 @@ function displayShortUrl() {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
-      'Accept-Encoding': 'UTF-8',
       'Content-Type': 'application/x-www-form-urlencoded',
-      'mode': 'cors'
     },
     body: `url=${document.querySelector('#url-input').value}`
   };
@@ -33,7 +31,7 @@ function displayShortUrl() {
       const msgDisplay = document.querySelector('#message');
       const jsonDisplay = document.querySelector('#json');
 
-          msgDisplay.innerHTML = '<p>API response: </p>'
+      msgDisplay.innerHTML = '<p>API response: </p>';
       jsonDisplay.innerHTML = JSON.stringify(json, undefined, 2);
     })
     .catch(err => console.error(err));
